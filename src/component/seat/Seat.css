@@ -1,0 +1,23 @@
+.seat-wrapper .available{
+    fill: none;
+    width: 4rem;
+}
+
+.seat-wrapper .available:hover{
+    fill: #88C900;
+}
+
+.seat-wrapper .unavailable{
+    fill: #808080;
+    width: 4rem;
+}
+
+.seat-wrapper .empty{
+    visibility: hidden;
+    width: 4rem;
+}
+
+.seat-wrapper .selected{
+    fill: #88C900;
+    width: 4rem;
+}

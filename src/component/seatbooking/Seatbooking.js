@@ -1,0 +1,156 @@
+import Seat from '../seat/Seat';
+import './Seatbooking.css';
+import data from '../../seatdata';
+import { useEffect, useState } from 'react';
+import { context } from '../../App';
+import { useContext } from 'react';
+
+let selectedSeatsCount = 0;
+let selectedSeatsId = [];
+
+export default function Seatbooking(){
+    const {ticketType, setTicketType, ticketCount, setTicketCount, error, success, selectedSeats, setSelectedSeats} = useContext(context);
+
+    const [seatData, setSeatData] = useState([...data]);
+
+    function onSeatClick(id){
+        if(ticketType === "" && ticketCount === 0){
+            error("Ticket Type and Quantity");
+        }
+        else if(ticketType === ""){
+            error("Ticket Type");
+        }
+        else if(ticketCount === 0){
+            error("Quantity");
+        }
+        else{
+            if(selectedSeatsCount === ticketCount){
+                removeSelected();
+                autoSelectSeats(id);
+            }
+            else{
+                autoSelectSeats(id);
+            }
+        }
+    }
+
+    function autoSelectSeats(id){
+        const rowName = id.charAt(0);
+        const seatNumber = Number(id.slice(1,id.length));
+
+
+        const selectedRow = seatData.filter((item) => {
+            return item.row === rowName;
+        });
+        
+        for(let i=0; i<selectedRow[0].seats.length; i++){
+            let seat = selectedRow[0].seats[i];
+            if(seat.pos >= seatNumber){
+                if(!seat.isSelected && seat.status === "available" && selectedSeatsCount < ticketCount){
+                    seat.isSelected = true;
+                    selectedSeatsCount += 1;
+                    selectedSeatsId.push(selectedRow[0].row + seat.pos);
+                }
+                else{
+                    setSelectedSeats(selectedSeatsId);
+                    break;
+                }
+            }
+        }
+
+        const tempData = [...seatData];
+        tempData[selectedRow[0].index] = selectedRow[0];
+        setSeatData(tempData);
+    }
+
+    function bookSeats(){
+        if(ticketCount){
+            let updatedSeatData = [...seatData]
+            updatedSeatData.forEach((rowItem)=>{
+                rowItem.seats.forEach((seat)=>{
+                    if(seat.isSelected){
+                        seat.status = "unavailable";
+                        seat.isSelected = false;
+                    }
+                })
+            })
+
+            success(selectedSeats);
+            setSeatData(updatedSeatData);
+            setTicketType("none")
+            selectedSeatsCount = 0;
+            setTicketCount(0);
+            selectedSeatsId = [];
+            setSelectedSeats([])
+        }
+    }
+
+    function removeSelected(){
+        let updatedSeatData = [...seatData]
+        updatedSeatData.forEach((rowItem)=>{
+            rowItem.seats.forEach((seat)=>{
+                if(seat.isSelected){
+                    seat.isSelected = false;
+                }
+            })
+        })
+
+        setSeatData(updatedSeatData);
+        selectedSeatsCount = 0;
+        // setTicketCount(0);
+        selectedSeatsId = [];
+        setSelectedSeats([])
+    }
+
+    useEffect(()=>{
+        removeSelected();
+    },[ticketType, ticketCount])
+
+
+
+    return (
+        <div id="seat_booking">
+            <div className="row-wrapper">
+                {
+                    seatData.map((rowitem, idx)=>(
+                        <div
+                        key={rowitem.row}
+                        className={(ticketType === "premium" && idx < 2) ? "row" : (ticketType === "standard" && idx > 1 ? "row" : "row row-disable")}>
+                            <h2 className='row-name'>{rowitem.row}</h2>
+                            {
+                                rowitem.seats.map((rowseat)=>(
+                                    <Seat
+                                    key={rowitem.row + rowseat.pos}
+                                    idname={rowitem.row + rowseat.pos}
+                                    clsname={(rowseat.isSelected && rowseat.status === "available") ? "selected" : rowseat.status}
+                                    onclickfn={(!rowseat.isSelected && rowseat.status === "available" && rowseat.type === ticketType) ? onSeatClick : null}/>
+                                ))
+                            }
+                        </div>
+                    ))
+                }
+            </div>
+
+            <div className="screen-wrapper">
+                <div className="screen"></div>
+                <h2>All eyes this way please!</h2>
+
+                <div className="button-wrapper">
+                    <button 
+                    className={ticketCount === selectedSeats.length ? "active" : "disable"}
+                    onClick={ticketCount === selectedSeats.length ? bookSeats : null}
+                    >
+                        {
+                            ticketCount === selectedSeats.length
+                            ?
+                            "Proceed"
+                            :
+                            "Select " + (ticketCount - selectedSeats.length) + " Seat"
+                        }
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    )
+}
