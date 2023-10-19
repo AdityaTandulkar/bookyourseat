@@ -119,25 +119,70 @@ export default function Seatbooking(){
 
     return (
         <div id="seat_booking">
-            <div className="row-wrapper">
-                {
-                    seatData.map((rowitem, idx)=>(
-                        <div
-                        key={rowitem.row}
-                        className={(ticketType === "premium" && idx < 2) ? "row" : (ticketType === "standard" && idx > 1 ? "row" : "row row-disable")}>
-                            <h2 className='row-name'>{rowitem.row}</h2>
-                            {
-                                rowitem.seats.map((rowseat)=>(
-                                    <Seat
-                                    key={rowitem.row + rowseat.pos}
-                                    idname={rowitem.row + rowseat.pos}
-                                    clsname={(rowseat.isSelected && rowseat.status === "available") ? "selected" : rowseat.status}
-                                    onclickfn={(!rowseat.isSelected && rowseat.status === "available" && rowseat.type === ticketType) ? onSeatClick : checkSeat}/>
-                                ))
-                            }
-                        </div>
-                    ))
-                }
+            <div className="premium">
+                <h2 className='ticket-type-heading'>Premium - Rs. 480</h2>
+
+                <div className="row-wrapper">
+                    {
+                        seatData.map((rowitem, idx)=>(
+                            <>
+                                {
+                                    idx < 2
+                                    
+                                    &&
+
+                                    <div
+                                    key={rowitem.row}
+                                    className={(ticketType === "premium" && idx < 2) ? "row" : (ticketType === "standard" && idx > 1 ? "row" : "row row-disable")}>
+                                        <h2 className='row-name'>{rowitem.row}</h2>
+                                        {
+                                            rowitem.seats.map((rowseat)=>(
+                                                <Seat
+                                                key={rowitem.row + rowseat.pos}
+                                                idname={rowitem.row + rowseat.pos}
+                                                clsname={(rowseat.isSelected && rowseat.status === "available") ? "selected" : rowseat.status}
+                                                onclickfn={(!rowseat.isSelected && rowseat.status === "available" && rowseat.type === ticketType) ? onSeatClick : checkSeat}/>
+                                            ))
+                                        }
+                                    </div>
+                                }
+                            </>
+                        ))
+                    }
+                </div>
+            </div>
+
+            <div className="Standard">
+                <h2 className='ticket-type-heading'>Standard - Rs. 280</h2>
+
+                <div className="row-wrapper">
+                    {
+                        seatData.map((rowitem, idx)=>(
+                            <>
+                                {
+                                    idx > 1
+                                    
+                                    &&
+
+                                    <div
+                                    key={rowitem.row}
+                                    className={(ticketType === "premium" && idx < 2) ? "row" : (ticketType === "standard" && idx > 1 ? "row" : "row row-disable")}>
+                                        <h2 className='row-name'>{rowitem.row}</h2>
+                                        {
+                                            rowitem.seats.map((rowseat)=>(
+                                                <Seat
+                                                key={rowitem.row + rowseat.pos}
+                                                idname={rowitem.row + rowseat.pos}
+                                                clsname={(rowseat.isSelected && rowseat.status === "available") ? "selected" : rowseat.status}
+                                                onclickfn={(!rowseat.isSelected && rowseat.status === "available" && rowseat.type === ticketType) ? onSeatClick : checkSeat}/>
+                                            ))
+                                        }
+                                    </div>
+                                }
+                            </>
+                        ))
+                    }
+                </div>
             </div>
 
             <div className="screen-wrapper">
@@ -146,13 +191,13 @@ export default function Seatbooking(){
 
                 <div className="button-wrapper">
                     <button 
-                    className={ticketCount === selectedSeats.length ? "active" : "disable"}
+                    className={(ticketCount !== 0 && selectedSeats.length !== 0 && ticketCount === selectedSeats.length) ? "active" : "disable"}
                     onClick={ticketCount === selectedSeats.length ? bookSeats : null}
                     >
                         {
-                            ticketCount === selectedSeats.length
+                            ticketCount !== 0 && selectedSeats !== 0 && ticketCount === selectedSeats.length
                             ?
-                            "Proceed"
+                            `Proceed - Rs. ${ticketType === "premium" ? 480*ticketCount : 280*ticketCount}.00`
                             :
                             "Select " + (ticketCount - selectedSeats.length) + " Seat"
                         }
