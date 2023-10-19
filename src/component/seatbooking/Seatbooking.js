@@ -13,17 +13,26 @@ export default function Seatbooking(){
 
     const [seatData, setSeatData] = useState([...data]);
 
-    function onSeatClick(id){
-        if(ticketType === "" && ticketCount === 0){
+    function checkSeat(){
+        if(ticketType === "none" && ticketCount === 0){
             error("Ticket Type and Quantity");
+            return false;
         }
-        else if(ticketType === ""){
+        else if(ticketType === "none"){
             error("Ticket Type");
+            return false;
         }
         else if(ticketCount === 0){
             error("Quantity");
+            return false;
         }
         else{
+            return true;
+        }
+    }
+
+    function onSeatClick(id){
+        if(checkSeat()){
             if(selectedSeatsCount === ticketCount){
                 removeSelected();
                 autoSelectSeats(id);
@@ -73,7 +82,7 @@ export default function Seatbooking(){
                         seat.isSelected = false;
                     }
                 })
-            })
+            });
 
             success(selectedSeats);
             setSeatData(updatedSeatData);
@@ -123,7 +132,7 @@ export default function Seatbooking(){
                                     key={rowitem.row + rowseat.pos}
                                     idname={rowitem.row + rowseat.pos}
                                     clsname={(rowseat.isSelected && rowseat.status === "available") ? "selected" : rowseat.status}
-                                    onclickfn={(!rowseat.isSelected && rowseat.status === "available" && rowseat.type === ticketType) ? onSeatClick : null}/>
+                                    onclickfn={(!rowseat.isSelected && rowseat.status === "available" && rowseat.type === ticketType) ? onSeatClick : checkSeat}/>
                                 ))
                             }
                         </div>
