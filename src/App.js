@@ -36,7 +36,7 @@ function success(seats){
 
 
 function App() {
-  const [ticketType, setTicketType] = useState("");
+  const [ticketType, setTicketType] = useState("none");
   const [ticketCount, setTicketCount] = useState(0);
   const [selectedSeats, setSelectedSeats] = useState([]);
 
