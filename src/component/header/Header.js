@@ -10,7 +10,7 @@ export default function Header(){
         <div id="header">
             <div className="title-wrapper">
                 <h1>Jawan</h1>
-                <h2>Alankar Cinema: Nagpur | Today, 08 Oct, 09:30 PM</h2>
+                <h2>Alankar Cinema: Nagpur | Today, 20 Oct, 09:30 PM</h2>
             </div>
 
             <div className="dropdown-wrapper">
